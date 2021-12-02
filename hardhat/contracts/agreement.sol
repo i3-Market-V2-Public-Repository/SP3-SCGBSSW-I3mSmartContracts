@@ -160,6 +160,10 @@ contract DataSharingAgreement {
         return agreements;
     }
     
+     function getAgreementsLength() public view returns (uint) {
+        return agreements.length;
+    }
+
     function getState(uint256 id) public view returns (State) {
         Agreement storage fetchedAgreement = agreements[id];
         return (fetchedAgreement.state);
