@@ -8,12 +8,12 @@ describe("DataSharingAgreement", function () {
     const dataSharingAgreement = await DataSharingAgreement.deploy();
     await dataSharingAgreement.deployed();
 
-    const createAgreement = await dataSharingAgreement.createAgreement(123, "purpose", "123", "456", [1, 356604033949585], [true, true, true], [true, true, true, true], true);
+    const createAgreementTx = await dataSharingAgreement.createAgreement(123, "purpose", "123", "456", [1, 356604033949585], [true, true, true], [true, true, true, true], true);
     // wait until the transaction is mined
-    await createAgreement.wait();
-    const agreement = await dataSharingAgreement.agreements(123);
+    await createAgreementTx.wait();
+    const agreement = await dataSharingAgreement.agreements(0);
     console.log(agreement);
-
-    ((await dataSharingAgreement.agreements).length) == 0;
+    const agreements = await dataSharingAgreement.getAgreements();
+    console.log(agreements);
   });
 });

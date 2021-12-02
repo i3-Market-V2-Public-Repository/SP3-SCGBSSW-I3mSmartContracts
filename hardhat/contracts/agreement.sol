@@ -156,9 +156,8 @@ contract DataSharingAgreement {
     }
  
     
-    function getAgreement(uint256 id) public view returns (Agreement memory) {
-        Agreement storage fetchedAgreement = agreements[id];
-        return (fetchedAgreement);
+    function getAgreements() public view returns (Agreement[] memory) {
+        return agreements;
     }
     
     function getState(uint256 id) public view returns (State) {
