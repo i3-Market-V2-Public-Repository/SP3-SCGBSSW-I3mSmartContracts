@@ -7,7 +7,7 @@ contract DataSharingAgreement {
     enum ViolationType { DataIncomplete, DataIncorrect, DataTampered, KeyInvalid, PaymentTooMuch, PaymentIncorrect }
 
     struct Agreement {
-        uint256 dataOfferingId; 
+        string dataOfferingId; 
         string purpose;
         State state;
         string providerId;
@@ -47,12 +47,16 @@ contract DataSharingAgreement {
 
     Agreement[] public agreements;
 
+    uint256 activeAgreementCount;
+    mapping (string => uint) providerCount;
+    mapping (string => uint) consumerCount;
+
     event AgreementCreated(string providerId, string consumerId, uint256 id);
     event AgreementUpdated(string providerId, string consumerId, uint256 id);
     event AgreementSigned(uint256 id);
 
     function createAgreement(
-                            uint256 _dataOfferingId,
+                            string memory _dataOfferingId,
                             string memory _purpose,
                             string memory _providerId,
                             string memory _consumerId,
@@ -70,7 +74,6 @@ contract DataSharingAgreement {
     
         newAgreement.state = State.Created;
         newAgreement.agreementDates[0] = block.timestamp; 
-        if(dates[0] <= newAgreement.agreementDates[0]) newAgreement.state = State.Active;
         newAgreement.agreementDates[1] = dates[0];
      
         require ( dates[1] > newAgreement.agreementDates[0], "End date must be after creation date." );
@@ -93,12 +96,15 @@ contract DataSharingAgreement {
         newAgreement.dataStream = _dataStream;
         
         agreements.push(newAgreement);
+
+        providerCount[_providerId]++;
+        consumerCount[_consumerId]++;
         
         emit AgreementCreated(_providerId, _consumerId, agreements.length - 1);
     }
     
     function updateAgreement(uint256 _id,
-                            uint256 _dataOfferingId,
+                            string memory _dataOfferingId,
                             string memory _purpose,
                             string memory _providerId,
                             string memory _consumerId,
@@ -114,8 +120,6 @@ contract DataSharingAgreement {
         agreement.purpose = _purpose;
         agreement.providerId = _providerId; 
         agreement.consumerId = _consumerId;
-        
-        if(dates[0] <= block.timestamp) agreement.state = State.Active;
         agreement.agreementDates[1] = dates[0];
      
         require ( dates[1] > agreement.agreementDates[0], "End date must be after creation date." );
@@ -142,8 +146,14 @@ contract DataSharingAgreement {
     
     function signAgreement (uint256 id, string memory _consumerId) public {
         require (keccak256(abi.encodePacked(agreements[id].consumerId)) == keccak256(abi.encodePacked(_consumerId)), "Only the consumer of this agreement can sign." );
-       
+    
         agreements[id].signed = true;
+
+        //set active
+        if( agreements[id].agreementDates[1] <= agreements[id].agreementDates[0]) {
+            agreements[id].state = State.Active;
+            activeAgreementCount++;
+        }
         emit AgreementSigned(id);
     }
 
@@ -164,7 +174,7 @@ contract DataSharingAgreement {
     } 
     
     function checkActiveAgreements () external view returns (Agreement[] memory) {
-        Agreement[] memory activeAgreements;
+        Agreement[] memory activeAgreements = new Agreement[](activeAgreementCount);
         uint counter = 0;
         for (uint i = 0; i < agreements.length; i++){
             if(agreements[i].state == State.Active) {   
@@ -176,7 +186,7 @@ contract DataSharingAgreement {
     }
     
     function checkAgreementsByProvider (string memory _providerId) external view returns (Agreement[] memory) {
-        Agreement[] memory providerAgreements;
+        Agreement[] memory providerAgreements = new Agreement[](providerCount[_providerId]);
         uint counter = 0;
         for (uint i = 0; i < agreements.length; i++){
             if (keccak256(abi.encodePacked(agreements[i].providerId)) == keccak256(abi.encodePacked(_providerId))) {
@@ -188,7 +198,7 @@ contract DataSharingAgreement {
     }
     
     function checkAgreementsByConsumer (string memory _consumerId) external view returns (Agreement[] memory) {
-        Agreement[] memory consumerAgreements;
+        Agreement[] memory consumerAgreements = new Agreement[](consumerCount[_consumerId]);
         uint counter = 0;
         for (uint i = 0; i < agreements.length; i++){
             if (keccak256(abi.encodePacked(agreements[i].consumerId)) == keccak256(abi.encodePacked(_consumerId))) {
