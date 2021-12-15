@@ -61,6 +61,10 @@ describe('Agreement contract', function () {
       const agreementsLength = await dataSharingAgreement.getAgreementsLength();
       console.log(agreementsLength.toNumber());
       
+        
+      const agreements = await dataSharingAgreement.getAgreements();
+      console.log(agreements[0].dataOfferingId);
+
       agreementsLength.should.equal(3);
     });
   });
