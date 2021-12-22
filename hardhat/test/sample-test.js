@@ -1,8 +1,6 @@
 const { expect, assert } = require('chai')
 const chai = require('chai')
 const should = chai.should()
-//const { ethers } = require("hardhat");
-// const { ContractFunctionVisibility } = require("hardhat/internal/hardhat-network/stack-traces/model");
 
 describe('Agreement contract', function () {
   let DataSharingAgreement
@@ -63,9 +61,17 @@ describe('Agreement contract', function () {
       
         
       const agreements = await dataSharingAgreement.getAgreements();
-      console.log(agreements[0].dataOfferingId);
-
+    
       agreementsLength.should.equal(3);
+      console.log(agreements[0].state.toString());
+
+      expect(agreements[0].dataOfferingId).to.be.not.undefined;
+      expect(agreements[0].dataOfferingId).to.be.not.null;
+      expect(agreements[0].dataOfferingId).to.be.not.NaN;
+
+      expect(agreements).to.be.an('array');
+
+      
     });
   });
 
@@ -97,6 +103,7 @@ describe('Agreement contract', function () {
       await signAgreementTx.wait()
       const agreements = await dataSharingAgreement.getAgreements();
       assert.isTrue(agreements[0].signed);
+      console.log(agreements[0].state)
     });
   });
 
@@ -105,7 +112,10 @@ describe('Agreement contract', function () {
     it('Should return Active agreements', async function () {
     
       const checkAgreementActiveAgreementsTx = await dataSharingAgreement.checkActiveAgreements();
-      console.log(checkAgreementActiveAgreementsTx);
+      expect(checkAgreementActiveAgreementsTx[0].signed).to.be.an('boolean');
+      expect(checkAgreementActiveAgreementsTx[0].signed).to.equal(true);
+      expect(checkAgreementActiveAgreementsTx[0].state).to.equal(1); 
+      expect(checkAgreementActiveAgreementsTx).to.have.lengthOf(1);
       
     });
   });
@@ -115,7 +125,9 @@ describe('Agreement contract', function () {
     it('Should return agreements by provider id', async function () {
 
       const checkAgreementByProviderTx = await dataSharingAgreement.checkAgreementsByProvider("333");
-      console.log(checkAgreementByProviderTx);
+      expect(checkAgreementByProviderTx).to.have.lengthOf(2);
+      expect(checkAgreementByProviderTx[0].providerId).to.equal('333');
+      expect(checkAgreementByProviderTx[1].providerId).to.equal('333');
       
     });
   });
@@ -124,7 +136,9 @@ describe('Agreement contract', function () {
     it('Should return agreements by consumer id', async function () {
   
       const checkAgreementByConsumerTx = await dataSharingAgreement.checkAgreementsByConsumer("789");
-      console.log(checkAgreementByConsumerTx);
+      expect(checkAgreementByConsumerTx).to.have.lengthOf(1);
+      expect(checkAgreementByConsumerTx[0].consumerId).to.equal('789');
+
       
     });
   });
