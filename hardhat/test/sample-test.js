@@ -1,3 +1,14 @@
+/*
+* Copyright (c) Siemens AG, 2020-2022
+*
+* Authors:
+*  Susanne Stahnke <susanne.stahnke@siemens.com>,
+*  Yvonne Kovacs <yvonne.kovacs@siemens.com> 
+*
+* This work is licensed under the terms of Apache 2.0.  See
+* the LICENSE file in the top-level directory.
+*/
+
 const { expect, assert } = require('chai')
 const chai = require('chai')
 const should = chai.should()
@@ -20,7 +31,7 @@ describe('Agreement contract', function () {
         'purpose',
         '123',
         '456',
-        [1, 356604033949585],
+        [164682854278890, 356604033949585],
         ["dataType","dataFormat", "dataSource"],
         [true, true, true],
         [true, true, true, true],
@@ -34,7 +45,7 @@ describe('Agreement contract', function () {
         'purpose',
         '333',
         '456',
-        [1, 356604033949585],
+        [164682854278890, 356604033949585],
         ["dataType","dataFormat", "dataSource"],
         [true, true, true],
         [true, true, true, true],
@@ -47,7 +58,7 @@ describe('Agreement contract', function () {
         'purpose',
         '333',
         '789',
-        [1, 356604033949585],
+        [164682854278890, 356604033949585],
         ["dataType","dataFormat", "dataSource"],
         [true, true, true],
         [true, false, false, true],
@@ -75,6 +86,17 @@ describe('Agreement contract', function () {
     });
   });
 
+
+  describe('DataSharingAgreement signed', function () {
+    it('Should check if agreement is signed', async function () {
+      const signAgreementTx = await dataSharingAgreement.signAgreement(0, "456");
+      await signAgreementTx.wait()
+      const agreements = await dataSharingAgreement.getAgreements();
+      assert.isTrue(agreements[0].signed);
+      console.log(agreements[0].state)
+    });
+  });
+
   describe('Update DataSharingAgreement', function () {
     it('Should update agreement and emit an event', async function () {
       const updateAgreementTx = await dataSharingAgreement.updateAgreement(
@@ -83,7 +105,7 @@ describe('Agreement contract', function () {
         'sharing data',
         '123',
         '456',
-        [1, 356604033949585],
+        [164682854278890, 356604033949585],
         ["dataType","dataFormat", "dataSource"],
         [true, true, true],
         [true, true, true, false],
