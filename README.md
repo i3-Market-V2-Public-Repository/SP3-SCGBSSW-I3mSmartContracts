@@ -1,84 +1,144 @@
 # 1. Introduction
 
-Implementation of Data Sharing Agreements (DSA) using Smart Contracts. A DSA contains obligations agreed upon data provider and consumer. 
+Implementation of Data Sharing Agreements (DSA) using Smart Contracts. A DSA contains obligations agreed upon data provider and consumer.
 
 [Here](https://gitlab.com/i3-market/code/wp3/t3.2/i3m-smartcontracts) is the DSA smart contract project repository.
 
 # 2. Smart Contract Functionality
 
-* <b> Create agreement
-  
-    Input: Contractual parameters (dataOfferingId, purpose, providerId, consumerId, dates, descriptionOfData, intendedUse, licenseGrant, dataStream)
+- <b> Create agreement </b>
 
-    Action: Create an agreement with the contractual parameters
+  - Input: Contractual parameters (providerPublicKey, consumerPublicKey, dataExchangeAgreementHash, signatures, dataOffering, purpose, dates, intendedUse, licenseGrant, pricingModel, typeOfData)
 
-    Output: Emit an AgreementCreated event with the provider, cosumer and agreement id.
+  - Action: Create an agreement with the contractual parameters
 
+  - Output: Emit an AgreementActive event with the provider and consumer public key and agreement id.
 
-* <b> Update agreement
+- <b> Get agreement </b>
 
-    Input: Contractual parameters
+  - Input: Agreement id
 
-    Action: Update an agreement with the contractual parameters
+  - Action: Retrieve the agreement with the given id.
 
-    Output: Emit an AgreementUpdated event with the provider, consumer and agreement id.
+  - Output: Agreement
 
-* <b> Sign agreement
+- <b> Get agreements length </b>
 
-    Input: AgreementId and ConsumerId
+  - Input: -
 
-    Action: The consumer with the given consumerId signs the agreement.
+  - Action: Retrieve number of agreements
 
-    Output: Emit an AgreementSigned event with the agreementId.
+  - Output: Number of agreements
 
-* <b> Get agreement 
+- <b> Get agreement state </b>
 
-    Input: AgreementId
+  - Input: Agreement id
 
-    Action: Retrieve the agreement with the given id.
+  - Action: Return the state of the agreement.
 
-    Output: Agreement
+  - Output: Active - 0 / Violated - 1 / Terminated - 2
 
-* <b> Get agreement state
+- <b> Retrieve pricing model </b>
 
-    Input: AgreementId
-    
-    Action: Return the state of the agreement.
+  - Input: Agreement id
 
-    Output: Created/ Active/ Violated/ Terminated
+  - Action: Retrieve pricing model for an agreement
 
-* <b> Get agreements
+  - Output: Pricing model
 
-    Action: Retrieve all agreements
+- <b> Check active agreements </b>
 
-    Output: Array of agreements
+  - Action: Return all active agreements
 
-* <b> Check active agreements
+  - Output: Array of Active agreements
 
-    Action: Return all active agreements
+- <b> Get agreements by provider </b>
 
-    Output: Array of Active/signed agreements
+  - Input: Provider public keys
 
-* <b> Check agreements by provider 
+  - Action: Return the provider’s agreements.
 
-    Input: ProviderId
+  Output: Array of agreements
 
-    Action: Return the provider’s agreements.
+- <b> Get agreements by consumer </b>
 
-    Output: Array of agreements 
+  - Input: Consumer public keys
 
-* <b> Check agreements by consumer
+  - Action: Return the consumer’s agreements
 
-    Input: ConsumerId
+  - Output: Array of agreements
 
-    Action: Return the consumer’s agreements
+- <b> Get agreements by data offering id </b>
 
-    Output: Array of agreements
+  - Input: Data offering id
 
-* <b> Issue claim
+  - Action: Return the agreements based on a data offering id
 
-    Input: ViolationType, IssuerId, AgreementId
+  - Output: Array of agreements
 
-    Action: Set the Violation Type and the issuer of the claim.
-    
-    Output: Emit a ClaimIssued event with the issuerId.
+- <b> Retrieve agreements by consumer public key </b>
+
+  - Input: Consumer public key
+
+  - Action: Return the agreements that reached the start date for a consumer public key
+
+  - Output: Array of agreements
+
+- <b> Evaluate signed resolution </b>
+
+  - Input: Agreement id, proof type, type, resolution,
+  data exchange id, iat, iss, sub
+
+  - Action: Evaluate signed resolution and return penalties if the resolution is not-completed (verification) or accepted (dispute)
+
+  - Output: Emit PenaltyChoices event with consumer public key, agreement id, penalty choices
+
+- <b> Terminate agreement </b>
+
+  - Input: Agreement id
+
+  - Action: Terminate agreement
+
+  - Output: Emit an AgreementTerminated event with the provider and consumer public key and agreement id.
+
+- <b> Enforce penalty </b>
+
+  - Input: Agreement id, chosen penalty, price, fee, new end date
+
+  - Action: The provider enforces the penalty chosen by the consumer.
+
+  - Output: Emit an AgreeOnPenalty event with provider and consumer public keys, agreement id, chosen penalty, new end date, price, fee
+
+- <b> Give consent </b>
+
+  - Input: Data offering id, consent subjects (a list of identifiers of the data owner), consent from hash, start and end date
+
+  - Action: Give consent for a data offering and publish the consent for multiple consent subjects
+
+  - Output: Emit event ConsentGiven with data offering id and consent subjects
+
+- <b> Check consent status </b>
+
+  - Input: Data offering id, consent subjects 
+
+  - Action: Check the status of the consent
+
+  - Output: Consent status
+    - Given - end date
+    - Revoked - 0
+
+- <b> Revoke consent </b>
+
+  - Input: Data offering id, consent subjects 
+
+  - Action: Revoke consent for the consent subjects
+
+  - Output: Emit event ConsentRevoked with data offering id, consent subjects and consumers (who will be notified that their consent has been revoked)
+
+- <b> Notify consent revoked </b>
+
+  - Input: Data offering id
+
+  - Action: Returns an array of consumers who have an agreement for that data offering id
+
+  - Output: Consumer public keys
