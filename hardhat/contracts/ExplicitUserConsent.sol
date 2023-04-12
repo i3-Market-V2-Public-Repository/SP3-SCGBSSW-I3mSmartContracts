@@ -47,16 +47,8 @@ contract ExplicitUserConsent {
         require(_startDate>=block.timestamp);
         require(_endDate>=_startDate);
         for(uint256 i=0; i< _consentSubjects.length; i++) {
-            Consent memory consent;
-            consent.dataOfferingId = _dataOfferingId;
-            consent.consentSubject = _consentSubjects[i];
-            consent.consentOperator = msg.sender;
-            consent.consentFormHash = _consentFormHash;
-            consent.startDate = _startDate;
-            consent.endDate = _endDate;
-            consent.status = _endDate; 
-
-            consents[_dataOfferingId].push(consent);
+            
+            consents[_dataOfferingId].push(Consent(_dataOfferingId,_consentSubjects[i], msg.sender, _consentFormHash,_startDate,_endDate, _endDate));
         }
         emit ConsentGiven(_dataOfferingId, _consentSubjects);
     }

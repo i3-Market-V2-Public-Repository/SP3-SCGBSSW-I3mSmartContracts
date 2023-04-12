@@ -4,7 +4,9 @@ Implementation of Data Sharing Agreements (DSA) using Smart Contracts. A DSA con
 
 [Here](https://gitlab.com/i3-market/code/wp3/t3.2/i3m-smartcontracts) is the DSA smart contract project repository.
 
-# 2. Smart Contract Functionality
+# 2. Smart Contracts Functionality
+
+## Agreement
 
 - <b> Create agreement </b>
 
@@ -22,14 +24,6 @@ Implementation of Data Sharing Agreements (DSA) using Smart Contracts. A DSA con
 
   - Output: Agreement
 
-- <b> Get agreements length </b>
-
-  - Input: -
-
-  - Action: Retrieve number of agreements
-
-  - Output: Number of agreements
-
 - <b> Get agreement state </b>
 
   - Input: Agreement id
@@ -46,43 +40,29 @@ Implementation of Data Sharing Agreements (DSA) using Smart Contracts. A DSA con
 
   - Output: Pricing model
 
-- <b> Check active agreements </b>
+- <b> Get agreement by provider </b>
 
-  - Action: Return all active agreements
+  - Input: Provider public key
 
-  - Output: Array of Active agreements
+  - Action: Return the provider’s agreement.
 
-- <b> Get agreements by provider </b>
+  - Output: Agreement
 
-  - Input: Provider public keys
+- <b> Get agreement by consumer </b>
 
-  - Action: Return the provider’s agreements.
+  - Input: Consumer public key
 
-  Output: Array of agreements
+  - Action: Return the consumer’s agreement
 
-- <b> Get agreements by consumer </b>
-
-  - Input: Consumer public keys
-
-  - Action: Return the consumer’s agreements
-
-  - Output: Array of agreements
+  - Output: Agreement
 
 - <b> Get agreements by data offering id </b>
 
   - Input: Data offering id
 
-  - Action: Return the agreements based on a data offering id
+  - Action: Return the agreement ids based on a data offering id
 
-  - Output: Array of agreements
-
-- <b> Retrieve agreements by consumer public key </b>
-
-  - Input: Consumer public key
-
-  - Action: Return the agreements that reached the start date for a consumer public key
-
-  - Output: Array of agreements
+  - Output: Array of agreement ids
 
 - <b> Evaluate signed resolution </b>
 
@@ -109,9 +89,20 @@ Implementation of Data Sharing Agreements (DSA) using Smart Contracts. A DSA con
 
   - Output: Emit an AgreeOnPenalty event with provider and consumer public keys, agreement id, chosen penalty, new end date, price, fee
 
+- <b> Notify consent revoked </b>
+
+  - Input: Data offering id
+
+  - Action: Returns an array of consumers who have an agreement for that data offering id
+
+  - Output: Consumer public keys
+
+## Explicit User Consent
+
 - <b> Give consent </b>
 
-  - Input: Data offering id, consent subjects (a list of identifiers of the data owner), consent from hash, start and end date
+  - Input: Data offering id, consent subjects (a list of identifiers of the data owner), consent from hash, start  
+           and end date
 
   - Action: Give consent for a data offering and publish the consent for multiple consent subjects
 
@@ -133,12 +124,7 @@ Implementation of Data Sharing Agreements (DSA) using Smart Contracts. A DSA con
 
   - Action: Revoke consent for the consent subjects
 
-  - Output: Emit event ConsentRevoked with data offering id, consent subjects and consumers (who will be notified that their consent has been revoked)
+  - Output: Emit event ConsentRevoked with data offering id, consent subjects and consumers (who will be notified   
+            that their consent has been revoked)
 
-- <b> Notify consent revoked </b>
 
-  - Input: Data offering id
-
-  - Action: Returns an array of consumers who have an agreement for that data offering id
-
-  - Output: Consumer public keys
